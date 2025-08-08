@@ -33,3 +33,9 @@ npx hardhat deploy   --tags upgradeNftAuction --network sepolia
 
 
 ```
+
+
+部署和升级脚本
+```
+lib
+```
