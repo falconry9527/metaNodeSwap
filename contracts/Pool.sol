@@ -55,7 +55,7 @@ contract Pool is IPool {
         //sqrtPriceX96: 它是一个 uint160 类型的整数，存储的是 当前价格的平方根，并放大 2^96 倍（即 X96 后缀的含义
         //当前价格: 指 token1 相对于 token0 的价格，即 1 单位 token0 = X 单位 token1
         require(sqrtPriceX96 == 0, "INITIALIZED");
-        // 通过价格获取 tick，判断 tick 是否在 tickLower 和 tickUpper 之间
+        // 根据 sqrtPriceX96_ 算 tick 的逻辑比较复杂，理解既可
         tick = TickMath.getTickAtSqrtPrice(sqrtPriceX96_);
         require(
             tick >= tickLower && tick < tickUpper,

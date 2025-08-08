@@ -63,11 +63,16 @@ contract Factory is IFactory {
         );
 
         // generate create2 salt  ??????
+        // salt（盐值）是一个 bytes32 类型的随机数，用于 唯一标识 要部署的合约
+        //1. 预先计算合约地址
+        //2. 避免地址冲突： 如果某个 salt 已经使用过，再次用相同的 salt 部署会 失败（防止重复部署）。
+        //3. 某些代理模式（如 EIP-1167）用 CREATE2 重新部署逻辑合约，保持代理地址不变。
         bytes32 salt = keccak256(
             abi.encode(token0, token1, tickLower, tickUpper, fee)
         );
 
         // create pool
+        // new Pool{salt: salt}(...) 是一种 确定性合约部署 的方式，它使用 CREATE2 操作码 来预先计算合约地址
         pool = address(new Pool{salt: salt}());
 
         // save created pool
