@@ -92,9 +92,6 @@ contract Factory is IFactory {
         address tokenA,
         address tokenB
     ) private pure returns (address, address) {
-        // return tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);
-        // sorted ： two tokenPiar is same
-        // do not sorted :  two tokenPiar is different
-        return (tokenA, tokenB);
+         return tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);
     }
 }
