@@ -35,7 +35,7 @@ npx hardhat deploy   --tags upgradeNftAuction --network sepolia
 ```
 
 
-问题解答：
+PoolManager 和 Factory 相关问题：
 ```
 1. calldata 起到什么作用 （IPoolManager.createAndInitializePoolIfNecessary 方法） ？
 只读且临时：calldata 是只读的，数据不会被修改，存储成本低。
@@ -57,4 +57,13 @@ salt（盐值）是一个 bytes32 类型的随机数，用于 唯一标识 要�
 new Pool{salt: salt}(...) 是一种 确定性合约部署 的方式，它使用 CREATE2 操作码来预先计算合约地址，而不是传统的 CREATE 随机地址生成方式。
 CREATE2 可以预先知道要部署的合约的地址 
 
+5. 为什么提供方法： PoolManager. getPairs()  
+合约为了防止消耗过多gas ，数组类子暴露 aa[i] 方法，获取所有交易对要自己写方法
+注意： 这里只是测试这样写，线上都是保存在数据库中，以免消耗过度的gas
+
+
+```
+
+pool 相关问题：
+```
 ```
