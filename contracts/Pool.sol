@@ -66,4 +66,24 @@ contract Pool is IPool {
     }
 
 
+      /// @dev Get the pool's balance of token0
+    /// @dev This function is gas optimized to avoid a redundant extcodesize check in addition to the returndatasize
+    /// check
+    function balance0() private view returns (uint256) {
+        (bool success, bytes memory data) = token0.staticcall(abi.encodeWithSelector(IERC20.balanceOf.selector, address(this)));
+        require(success && data.length >= 32);
+        return abi.decode(data, (uint256));
+    }
+
+    /// @dev Get the pool's balance of token1
+    /// @dev This function is gas optimized to avoid a redundant extcodesize check in addition to the returndatasize
+    /// check
+    function balance1() private view returns (uint256) {
+        (bool success, bytes memory data) = token1.staticcall(abi.encodeWithSelector(IERC20.balanceOf.selector, address(this)));
+        require(success && data.length >= 32);
+        return abi.decode(data, (uint256));
+    }
+
+
+
 }
