@@ -62,7 +62,7 @@ contract Factory is IFactory {
             fee
         );
 
-        // generate create2 salt
+        // generate create2 salt  ??????
         bytes32 salt = keccak256(
             abi.encode(token0, token1, tickLower, tickUpper, fee)
         );

@@ -18,6 +18,7 @@ pragma solidity ^0.8.24;
 // }
 
 interface IPool {
+
     function factory() external view returns (address);
 
     function token0() external view returns (address);
@@ -30,23 +31,23 @@ interface IPool {
 
     function tickUpper() external view returns (int24);
 
-    // function sqrtPriceX96() external view returns (uint160);
+    function sqrtPriceX96() external view returns (uint160);
 
-    // function tick() external view returns (int24);
+    function tick() external view returns (int24);
 
-    // function liquidity() external view returns (uint128);
+    function liquidity() external view returns (uint128);
 
-    // function initialize(uint160 sqrtPriceX96) external;
+    function initialize(uint160 sqrtPriceX96) external;
 
-    // /// feeGrowthGlobal0X128 记录从创建到现在，每个流动性累计产生的 token0 的手续费
-    // /// @notice The fee growth as a Q128.128 fees of token0 collected per unit of liquidity for the entire life of the pool
-    // /// @dev This value can overflow the uint256
-    // function feeGrowthGlobal0X128() external view returns (uint256);
+    /// feeGrowthGlobal0X128 记录从创建到现在，每个流动性累计产生的 token0 的手续费
+    /// @notice The fee growth as a Q128.128 fees of token0 collected per unit of liquidity for the entire life of the pool
+    /// @dev This value can overflow the uint256
+    function feeGrowthGlobal0X128() external view returns (uint256);
 
-    // /// feeGrowthGlobal1X128 记录从创建到现在，每个流动性累计产生的 token1 的手续费
-    // /// @notice The fee growth as a Q128.128 fees of token1 collected per unit of liquidity for the entire life of the pool
-    // /// @dev This value can overflow the uint256
-    // function feeGrowthGlobal1X128() external view returns (uint256);
+    /// feeGrowthGlobal1X128 记录从创建到现在，每个流动性累计产生的 token1 的手续费
+    /// @notice The fee growth as a Q128.128 fees of token1 collected per unit of liquidity for the entire life of the pool
+    /// @dev This value can overflow the uint256
+    function feeGrowthGlobal1X128() external view returns (uint256);
 
     // function getPosition(
     //     address owner

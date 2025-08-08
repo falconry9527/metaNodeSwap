@@ -15,7 +15,8 @@ import "./libraries/FixedPoint128.sol";
 import "./interfaces/IPool.sol";
 import "./interfaces/IFactory.sol";
 
-abstract contract Pool is IPool {
+contract Pool is IPool {
+  
     /// @inheritdoc IPool
     address public immutable override factory;
     /// @inheritdoc IPool
@@ -29,6 +30,18 @@ abstract contract Pool is IPool {
     /// @inheritdoc IPool
     int24 public immutable override tickUpper;
 
+    /// @inheritdoc IPool
+    uint160 public override sqrtPriceX96;
+    /// @inheritdoc IPool
+    int24 public override tick;
+    /// @inheritdoc IPool
+    uint128 public override liquidity;
+
+    /// @inheritdoc IPool
+    uint256 public override feeGrowthGlobal0X128;
+    /// @inheritdoc IPool
+    uint256 public override feeGrowthGlobal1X128;
+
     constructor() {
         // constructor 中初始化 immutable 的常量
         // Factory 创建 Pool 时会通 new Pool{salt: salt}() 的方式创建 Pool 合约，通过 salt 指定 Pool 的地址，这样其他地方也可以推算出 Pool 的地址
@@ -38,5 +51,19 @@ abstract contract Pool is IPool {
             msg.sender
         ).parameters();
     }
+
+
+    function initialize(uint160 sqrtPriceX96_) external override {
+        require(sqrtPriceX96 == 0, "INITIALIZED");
+        // 通过价格获取 tick，判断 tick 是否在 tickLower 和 tickUpper 之间
+        tick = TickMath.getTickAtSqrtPrice(sqrtPriceX96_);
+        require(
+            tick >= tickLower && tick < tickUpper,
+            "sqrtPriceX96 should be within the range of [tickLower, tickUpper)"
+        );
+        // 初始化 Pool 的 sqrtPriceX96
+        sqrtPriceX96 = sqrtPriceX96_;
+    }
+
 
 }
