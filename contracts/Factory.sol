@@ -50,7 +50,7 @@ contract Factory is IFactory {
             ) {
                 return existingPools[i] ;
             }
-  }
+        }
 
         // save pool info
         parameters = Parameters(
