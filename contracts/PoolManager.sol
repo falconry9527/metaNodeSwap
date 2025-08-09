@@ -23,9 +23,8 @@ contract PoolManager is Factory,IPoolManager {
         poolsInfo = new PoolInfo[](length);
         uint256 index;
         for (uint32 i = 0; i < pairs.length; i++) {
-            address[] memory addresses = pools[pairs[i].token0][
-                pairs[i].token1
-            ];
+            address[] memory addresses = pools[pairs[i].token0][pairs[i].token1 ];
+
             for (uint32 j = 0; j < addresses.length; j++) {
                 IPool pool = IPool(addresses[j]);
                 poolsInfo[index] = PoolInfo({
@@ -62,7 +61,6 @@ contract PoolManager is Factory,IPoolManager {
         IPool pool = IPool(poolAddress);
 
         uint256 index = pools[pool.token0()][pool.token1()].length;
-
         // 新创建的池子，没有初始化价格，需要初始化价格
         if (pool.sqrtPriceX96() == 0) {
             pool.initialize(params.sqrtPriceX96);
