@@ -64,10 +64,10 @@ CREATE2 可以预先知道要部署的合约的地址
 
 pool 各种方法作用
 ```
-mint(铸币)： 添加流动性
-burn（烧伤）：燃烧流动性(换取token0 和 token1)
-collect(收集)：取出代币 (token0 和 token1)
-swap(交换)：
+mint(铸币) : 添加流动性
+burn（烧伤）: 燃烧流动性(换取token0 和 token1)
+collect(收集) : 取出代币 (token0 或 token1)
+swap(交换) :  交换代币 （token0 换 token1 ，token1 换 token0）
 
 ```
 

@@ -293,6 +293,12 @@ contract Pool is IPool {
         uint256 feeAmount;
     }
 
+    // 交换代币
+    // recipient : 用户地址
+    // zeroForOne : true 代表了是 token0 换 token1,反之则相反。
+    // amountSpecified : 大于 0 代表我们指定了要支付的 token0 的数量，amountSpecified 小于 0 则代表我们指定了要获取的 token1 的数量
+    // sqrtPriceLimitX96 : 是交易的一个价格下限
+    // data : 
     function swap(
         address recipient,
         bool zeroForOne,
@@ -305,8 +311,9 @@ contract Pool is IPool {
         // zeroForOne: 如果从 token0 交换 token1 则为 true，从 token1 交换 token0 则为 false
         // 判断当前价格是否满足交易的条件
         require(
-            zeroForOne
-                ? sqrtPriceLimitX96 < sqrtPriceX96 &&
+            // 存入 token0，取出token1： token0增多，token0价格下降： sqrtPriceLimitX96 < sqrtPriceX96
+            // 取出 token0，存入token1： sqrtPriceLimitX96 > sqrtPriceX96
+            zeroForOne? sqrtPriceLimitX96 < sqrtPriceX96 &&
                     sqrtPriceLimitX96 > TickMath.MIN_SQRT_PRICE
                 : sqrtPriceLimitX96 > sqrtPriceX96 &&
                     sqrtPriceLimitX96 < TickMath.MAX_SQRT_PRICE,
@@ -320,9 +327,7 @@ contract Pool is IPool {
             amountSpecifiedRemaining: amountSpecified,
             amountCalculated: 0,
             sqrtPriceX96: sqrtPriceX96,
-            feeGrowthGlobalX128: zeroForOne
-                ? feeGrowthGlobal0X128
-                : feeGrowthGlobal1X128,
+            feeGrowthGlobalX128: zeroForOne ? feeGrowthGlobal0X128 : feeGrowthGlobal1X128,
             amountIn: 0,
             amountOut: 0,
             feeAmount: 0
@@ -342,13 +347,7 @@ contract Pool is IPool {
             state.feeAmount
         ) = SwapMath.computeSwapStep(
             sqrtPriceX96,
-            (
-                zeroForOne
-                    ? sqrtPriceX96PoolLimit < sqrtPriceLimitX96
-                    : sqrtPriceX96PoolLimit > sqrtPriceLimitX96
-            )
-                ? sqrtPriceLimitX96
-                : sqrtPriceX96PoolLimit,
+            (zeroForOne? sqrtPriceX96PoolLimit < sqrtPriceLimitX96 : sqrtPriceX96PoolLimit > sqrtPriceLimitX96 ) ? sqrtPriceLimitX96 : sqrtPriceX96PoolLimit,
             liquidity,
             amountSpecified,
             fee

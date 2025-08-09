@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 pragma solidity ^0.8.24;
 
+
+// 添加流动性的时候存入代币
 interface IMintCallback {
     function mintCallback(
         uint256 amount0Owed,
@@ -9,6 +11,7 @@ interface IMintCallback {
     ) external;
 }
 
+// swap 的时候存入代币
 interface ISwapCallback {
     function swapCallback(
         int256 amount0Delta,
