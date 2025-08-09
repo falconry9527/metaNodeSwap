@@ -75,8 +75,10 @@ swap(交换) :  交换代币 （token0 换 token1 ，token1 换 token0）
 pool 相关问题
 ```
 1.sqrtPriceX96 是什么 ？
-- sqrtPriceX96: 它是一个 uint160 类型的整数，存储的是 当前价格的平方根，并放大 2^96 倍（即 X96 后缀的含义
+- sqrtPriceX96: 它是一个 uint160 类型的整数，存储的是 当前价格的平方根，并放大 2^96 倍（即 X96 后缀的含义）
 - 当前价格: 指 token1 相对于 token0 的价格，即 1 单位 token0 = X 单位 token1
+- -  可以根据sqrtPriceX96算出: tick = TickMath.getTickAtSqrtPrice(state.sqrtPriceX96);
+
 
 2. tick ， tickSpacing 和 fee
 tick： 是价格的最小刻度单位，代表价格变动的最小间隔。一般是 当前价格 的万分之一，所以可以根据 sqrtPriceX96 算出来
@@ -89,7 +91,9 @@ fee：以 1,000,000 为基底的手续费费率，Uniswap支持四种手续费�
 
 4.Liquidity
 Position 的流动性（Liquidity） 是一个核心概念，它决定了用户在特定价格区间内提供的资金对交易的影响能力
-可以根据 当用户在价格区间 [P_a, P_b] 代币当前价格（如 Δx 和 Δy）和 当前价格P 计算出来，公式自己百度出来
+可以根据 当用户在价格区间 [P_a, P_b] 代币当前价格（如 Δx 和 Δy） 计算出来，公式自己百度出来
+- -  可以根据 Liquidity算出 代币价格 ，如下：
+amount0 = SqrtPriceMath.getAmount0Delta(sqrtPriceX96,TickMath.getSqrtPriceAtTick(tickUpper),params.liquidityDelta);
 
 5. feeGrowthGlobal0X128 和 feeGrowthGlobal1X128
 feeGrowthGlobal0X128 : token0 全局累积手续费

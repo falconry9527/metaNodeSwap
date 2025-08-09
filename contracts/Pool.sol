@@ -324,13 +324,13 @@ contract Pool is IPool {
         bool exactInput = amountSpecified > 0;
 
         SwapState memory state = SwapState({
-            amountSpecifiedRemaining: amountSpecified,
-            amountCalculated: 0,
-            sqrtPriceX96: sqrtPriceX96,
-            feeGrowthGlobalX128: zeroForOne ? feeGrowthGlobal0X128 : feeGrowthGlobal1X128,
-            amountIn: 0,
-            amountOut: 0,
-            feeAmount: 0
+            amountSpecifiedRemaining: amountSpecified, // 还没有swap的代币
+            amountCalculated: 0, // 已经swap的代币
+            sqrtPriceX96: sqrtPriceX96, // 当前价格
+            feeGrowthGlobalX128: zeroForOne ? feeGrowthGlobal0X128 : feeGrowthGlobal1X128, // 取 token0 或者 token1 的手续费
+            amountIn: 0,  // 该交易中用户转入的 token 的数量
+            amountOut: 0, // 该交易中用户转出的 token 的数量
+            feeAmount: 0 // 手续费
         });
 
         // 计算交易的上下限，基于 tick 计算价格
@@ -373,10 +373,8 @@ contract Pool is IPool {
 
         // 计算交易后用户手里的 token0 和 token1 的数量
         if (exactInput) {
-            state.amountSpecifiedRemaining -= (state.amountIn + state.feeAmount)
-                .toInt256();
-            state.amountCalculated = state.amountCalculated.sub(
-                state.amountOut.toInt256()
+            state.amountSpecifiedRemaining -= (state.amountIn + state.feeAmount).toInt256();
+            state.amountCalculated = state.amountCalculated.sub(state.amountOut.toInt256()
             );
         } else {
             state.amountSpecifiedRemaining += state.amountOut.toInt256();
