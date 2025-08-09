@@ -62,6 +62,8 @@ contract PoolManager is Factory,IPoolManager {
 
         uint256 index = pools[pool.token0()][pool.token1()].length;
         // 新创建的池子，没有初始化价格，需要初始化价格
+        //sqrtPriceX96: 它是一个 uint160 类型的整数，存储的是 当前价格的平方根，并放大 2^96 倍（即 X96 后缀的含义)
+        // 所以这个值是可以根据当前价格给传入进来的
         if (pool.sqrtPriceX96() == 0) {
             pool.initialize(params.sqrtPriceX96);
             if (index == 1) {

@@ -68,7 +68,7 @@ contract Pool is IPool {
     }
 
     function initialize(uint160 sqrtPriceX96_) external override {
-        //sqrtPriceX96: 它是一个 uint160 类型的整数，存储的是 当前价格的平方根，并放大 2^96 倍（即 X96 后缀的含义
+        //sqrtPriceX96: 它是一个 uint160 类型的整数，存储的是 当前价格的平方根，并放大 2^96 倍（即 X96 后缀的含义)
         //当前价格: 指 token1 相对于 token0 的价格，即 1 单位 token0 = X 单位 token1
         require(sqrtPriceX96 == 0, "INITIALIZED");
         // 根据 sqrtPriceX96_ 算 tick 的逻辑比较复杂，理解既可
