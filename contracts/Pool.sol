@@ -164,6 +164,7 @@ contract Pool is IPool {
                 FixedPoint128.Q128
             )
         );
+        
         uint128 tokensOwed1 = uint128(
             FullMath.mulDiv(
                 feeGrowthGlobal1X128 - position.feeGrowthInside1LastX128,
@@ -357,7 +358,7 @@ contract Pool is IPool {
         sqrtPriceX96 = state.sqrtPriceX96;
         tick = TickMath.getTickAtSqrtPrice(state.sqrtPriceX96);
 
-        // 计算手续费
+        // 计算最新的累积手续费
         state.feeGrowthGlobalX128 += FullMath.mulDiv(
             state.feeAmount,
             FixedPoint128.Q128,

@@ -80,6 +80,7 @@ pool 相关问题
 - -  可以根据sqrtPriceX96算出: tick = TickMath.getTickAtSqrtPrice(state.sqrtPriceX96);
 
 
+
 2. tick ， tickSpacing 和 fee
 tick： 是价格的最小刻度单位，代表价格变动的最小间隔。一般是 当前价格 的万分之一，所以可以根据 sqrtPriceX96 算出来
 tickSpacing（刻度间隔）： 每次交易间隔几个 tick
@@ -94,6 +95,8 @@ Position 的流动性（Liquidity） 是一个核心概念，它决定了用户�
 可以根据 当用户在价格区间 [P_a, P_b] 代币当前价格（如 Δx 和 Δy） 计算出来，公式自己百度出来
 - -  可以根据 Liquidity算出 代币价格 ，如下：
 amount0 = SqrtPriceMath.getAmount0Delta(sqrtPriceX96,TickMath.getSqrtPriceAtTick(tickUpper),params.liquidityDelta);
+
+- -  可以根据Liquidity和当前交易的手续费，算出全局的手续费 :
 
 5. feeGrowthGlobal0X128 和 feeGrowthGlobal1X128
 feeGrowthGlobal0X128 : token0 全局累积手续费
