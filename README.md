@@ -39,8 +39,6 @@ dex 相关问题
 ```
 自动做市商（AMM）机制：x∗y=k
 流动性池是一个持有两种不同 token 的合约， x 和 y 分别代表 token0 的数目和 token1 的数目， k 是它们的乘积，当 swap 发生时，token0 和 token1 的数量都会发生变化，但二者乘积保持不变，仍然为 k 。
-
-
 ```
 
 
@@ -64,6 +62,14 @@ CREATE2 可以预先知道要部署的合约的地址
 
 ```
 
+pool 各种方法作用
+```
+mint(铸币)： 添加流动性
+burn（烧伤）：燃烧流动性(换取token0 和 token1)
+collect(收集)：取出代币 (token0 和 token1)
+swap(交换)：
+
+```
 
 
 pool 相关问题
@@ -88,5 +94,8 @@ Position 的流动性（Liquidity） 是一个核心概念，它决定了用户�
 5. feeGrowthGlobal0X128 和 feeGrowthGlobal1X128
 feeGrowthGlobal0X128 : token0 全局累积手续费
 feeGrowthGlobal1X128 : token1 全局累积手续费
+
+6. using SafeCast for uint256; 
+balance0Before.add(amount0)： 当精度丢失的时候，程序报错且停止
 
 ```

@@ -138,12 +138,13 @@ contract Pool is IPool {
         int128 liquidityDelta;
     }
 
-    //  更新某个地址的流动性，根据新增的流动性 liquidityDelta
+    //  根据新增的流动性 amount, 算出需要 存入的代币金额 amount0，amount1；并更新 流动性头寸 的其他属性
+    // amount 是流动性，而不是要 mint 的代币，至于流动性如何计算，我们在 PositionManager 的章节中讲解
     function _modifyPosition(
         ModifyPositionParams memory params
     ) private returns (int256 amount0, int256 amount1) {
-      // 通过新增的流动性计算 amount0 和 amount1
-      amount0 = SqrtPriceMath.getAmount0Delta(
+        //1. 通过新增的流动性计算 amount0 和 amount1
+        amount0 = SqrtPriceMath.getAmount0Delta(
             sqrtPriceX96,
             TickMath.getSqrtPriceAtTick(tickUpper),
             params.liquidityDelta
@@ -153,7 +154,7 @@ contract Pool is IPool {
             sqrtPriceX96,
             params.liquidityDelta
         );
-
+        // 2. 更新账户的 其他属性：liquidity，tokensOwed0，tokensOwed1，feeGrowthInside0LastX128，feeGrowthInside1LastX128
         Position storage position = positions[params.owner];
         // 根据新增的流动性，计算新增的手续费 tokensOwed0，tokensOwed1
         uint128 tokensOwed0 = uint128(
@@ -170,7 +171,6 @@ contract Pool is IPool {
                 FixedPoint128.Q128
             )
         );
-
         // 把单位手续费重制 和 当前全局手续费一样: 代表手续费已经被提取到 账户中（tokensOwed0和tokensOwed1）
         position.feeGrowthInside0LastX128 = feeGrowthGlobal0X128;
         position.feeGrowthInside1LastX128 = feeGrowthGlobal1X128;
@@ -189,16 +189,19 @@ contract Pool is IPool {
             position.liquidity,
             params.liquidityDelta
         );
-
     }
 
+    // 添加流动性 
+    // amount 是流动性，而不是要 mint 的代币，至于流动性如何计算，我们在 PositionManager 的章节中讲解
+    // recipient 可以指定讲流动性的权益赋予谁
+    // data 是用来在回调函数中传递参数的
     function mint(
         address recipient,
         uint128 amount,
         bytes calldata data
     ) external override returns (uint256 amount0, uint256 amount1) {
         require(amount > 0, "Mint amount must be greater than 0");
-        // 基于 amount 计算出当前需要多少 amount0 和 amount1
+        // 基于 流动性 amount 计算出当前需要多少 amount0 和 amount1
         (int256 amount0Int, int256 amount1Int) = _modifyPosition(
             ModifyPositionParams({
                 owner: recipient,
@@ -212,9 +215,9 @@ contract Pool is IPool {
         uint256 balance1Before;
         if (amount0 > 0) balance0Before = balance0();
         if (amount1 > 0) balance1Before = balance1();
-        // 回调 mintCallback
+        // 回调 mintCallback: LP 需要在这个回调方法中将对应的代币转入到 Pool 合约中
         IMintCallback(msg.sender).mintCallback(amount0, amount1, data);
-
+        // 回调之后, token0 和 token1 回增加，回调用成功后，balance0Before+amount0< balance0()
         if (amount0 > 0)
             require(balance0Before.add(amount0) <= balance0(), "M0");
         if (amount1 > 0)
@@ -223,6 +226,7 @@ contract Pool is IPool {
         emit Mint(msg.sender, recipient, amount, amount0, amount1);
     }
 
+    // 取出代币
     function collect(
         address recipient,
         uint128 amount0Requested,
@@ -232,12 +236,8 @@ contract Pool is IPool {
         Position storage position = positions[msg.sender];
 
         // 把钱退给用户 recipient
-        amount0 = amount0Requested > position.tokensOwed0
-            ? position.tokensOwed0
-            : amount0Requested;
-        amount1 = amount1Requested > position.tokensOwed1
-            ? position.tokensOwed1
-            : amount1Requested;
+        amount0 = amount0Requested > position.tokensOwed0 ? position.tokensOwed0 : amount0Requested;
+        amount1 = amount1Requested > position.tokensOwed1 ? position.tokensOwed1 : amount1Requested;
 
         if (amount0 > 0) {
             position.tokensOwed0 -= amount0;
@@ -247,18 +247,15 @@ contract Pool is IPool {
             position.tokensOwed1 -= amount1;
             TransferHelper.safeTransfer(token1, recipient, amount1);
         }
-
         emit Collect(msg.sender, recipient, amount0, amount1);
     }
 
+    // 燃烧流动性
     function burn(
         uint128 amount
     ) external override returns (uint256 amount0, uint256 amount1) {
         require(amount > 0, "Burn amount must be greater than 0");
-        require(
-            amount <= positions[msg.sender].liquidity,
-            "Burn amount exceeds liquidity"
-        );
+        require(amount <= positions[msg.sender].liquidity,"Burn amount exceeds liquidity");
         // 修改 positions 中的信息
         (int256 amount0Int, int256 amount1Int) = _modifyPosition(
             ModifyPositionParams({
@@ -269,17 +266,12 @@ contract Pool is IPool {
         // 获取燃烧后的 amount0 和 amount1
         amount0 = uint256(-amount0Int);
         amount1 = uint256(-amount1Int);
-
+        
         if (amount0 > 0 || amount1 > 0) {
-            (
-                positions[msg.sender].tokensOwed0,
-                positions[msg.sender].tokensOwed1
-            ) = (
-                positions[msg.sender].tokensOwed0 + uint128(amount0),
-                positions[msg.sender].tokensOwed1 + uint128(amount1)
-            );
+            // 把燃烧流动性获取的 金额，加到用户余额里面
+            positions[msg.sender].tokensOwed0= positions[msg.sender].tokensOwed0 + uint128(amount0) ;
+            positions[msg.sender].tokensOwed1= positions[msg.sender].tokensOwed1 + uint128(amount1);
         }
-
         emit Burn(msg.sender, amount, amount0, amount1);
     }
 
@@ -340,9 +332,7 @@ contract Pool is IPool {
         uint160 sqrtPriceX96Lower = TickMath.getSqrtPriceAtTick(tickLower);
         uint160 sqrtPriceX96Upper = TickMath.getSqrtPriceAtTick(tickUpper);
         // 计算用户交易价格的限制，如果是 zeroForOne 是 true，说明用户会换入 token0，会压低 token0 的价格（也就是池子的价格），所以要限制最低价格不能超过 sqrtPriceX96Lower
-        uint160 sqrtPriceX96PoolLimit = zeroForOne
-            ? sqrtPriceX96Lower
-            : sqrtPriceX96Upper;
+        uint160 sqrtPriceX96PoolLimit = zeroForOne ? sqrtPriceX96Lower : sqrtPriceX96Upper;
 
         // 计算交易的具体数值
         (
