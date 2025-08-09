@@ -78,5 +78,15 @@ tickSpacing（刻度间隔）： 每次交易间隔几个 tick
 fee： 交易手续费，tickSpacing越大，波动越大，fee 一般越大
 fee：以 1,000,000 为基底的手续费费率，Uniswap支持四种手续费费率（0.01%，0.05%、0.30%、1.00%），对于一般的交易对推荐 0.30%，fee 取值即 3000；
 
+3.Position 流动性头寸
+当用户在某个池子（如 ETH/USDC）的特定价格区间内存入代币时，系统会生成一个 NFT（Non-Fungible Token） 代表该头寸
+
+4.Liquidity
+Position 的流动性（Liquidity） 是一个核心概念，它决定了用户在特定价格区间内提供的资金对交易的影响能力
+可以根据 当用户在价格区间 [P_a, P_b] 代币当前价格（如 Δx 和 Δy）和 当前价格P 计算出来，公式自己百度出来
+
+5. feeGrowthGlobal0X128 和 feeGrowthGlobal1X128
+feeGrowthGlobal0X128 : token0 全局累积手续费
+feeGrowthGlobal1X128 : token1 全局累积手续费
 
 ```
