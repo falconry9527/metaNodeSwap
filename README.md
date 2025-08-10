@@ -27,10 +27,7 @@ npm config set registry https://mirrors.cloud.tencent.com/npm/
 ```
 npx hardhat clean && npx hardhat compile
 
-npx hardhat run scripts/deploy_stake.js --network sepolia
-npx hardhat deploy   --tags deployNftAuction --network sepolia 
-npx hardhat deploy   --tags upgradeNftAuction --network sepolia 
-
+npx hardhat ignition deploy ./ignition/modules/deploy_swap.ts --network sepolia
 
 ```
 
