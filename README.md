@@ -102,3 +102,9 @@ feeGrowthGlobal1X128 : token1 全局累积手续费
 balance0Before.add(amount0)： 当精度丢失的时候，程序报错且停止
 
 ```
+
+
+PositionManager 相关问题
+```
+
+```

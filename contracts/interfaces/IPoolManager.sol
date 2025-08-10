@@ -19,7 +19,6 @@ interface IPoolManager is IFactory {
         uint128 liquidity;
     }
 
-
     struct Pair {
         address token0;
         address token1;
