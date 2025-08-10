@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 pragma solidity ^0.8.24;
-// pragma abicoder v2;
+pragma abicoder v2;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -115,6 +115,7 @@ contract PositionManager is IPositionManager, ERC721 {
             uint256 feeGrowthInside0LastX128,
             uint256 feeGrowthInside1LastX128,
             ,
+
         ) = pool.getPosition(address(this));
 
         // 更新用户的 positions
@@ -135,10 +136,21 @@ contract PositionManager is IPositionManager, ERC721 {
         });
     }
 
+    modifier isAuthorizedForToken(uint256 tokenId) {
+        address owner = ERC721.ownerOf(tokenId);
+        require(_isAuthorized(owner, msg.sender, tokenId), "Not approved");
+        _;
+    }
+
     function burn(
         uint256 positionId
-    ) external override returns (uint256 amount0, uint256 amount1) {
-         PositionInfo storage position = positions[positionId];
+    )
+        external
+        override
+        isAuthorizedForToken(positionId)
+        returns (uint256 amount0, uint256 amount1)
+    {
+        PositionInfo storage position = positions[positionId];
         // 通过 isAuthorizedForToken 检查 positionId 是否有权限
         // 移除流动性，但是 token 还是保留在 pool 中，需要再调用 collect 方法才能取回 token
         // 通过 positionId 获取对应 LP 的流动性
@@ -192,7 +204,12 @@ contract PositionManager is IPositionManager, ERC721 {
     function collect(
         uint256 positionId,
         address recipient
-    ) external override returns (uint256 amount0, uint256 amount1) {
+    )
+        external
+        override
+        isAuthorizedForToken(positionId)
+        returns (uint256 amount0, uint256 amount1)
+    {
         // 通过 isAuthorizedForToken 检查 positionId 是否有权限
         // 调用 Pool 的方法给 LP 退流动性
         PositionInfo storage position = positions[positionId];
@@ -224,8 +241,8 @@ contract PositionManager is IPositionManager, ERC721 {
         bytes calldata data
     ) external override {
         // 检查 callback 的合约地址是否是 Pool
-        (address token0, address token1, uint32 index, address payer) 
-        = abi.decode(data, (address, address, uint32, address));
+        (address token0, address token1, uint32 index, address payer) = abi
+            .decode(data, (address, address, uint32, address));
 
         // pool 回调的时候,msg.sender的地址就是 pool 了
         address _pool = poolManager.getPool(token0, token1, index);
@@ -239,5 +256,4 @@ contract PositionManager is IPositionManager, ERC721 {
             IERC20(token1).transferFrom(payer, msg.sender, amount1);
         }
     }
-
 }
