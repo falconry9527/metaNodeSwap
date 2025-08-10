@@ -40,14 +40,14 @@ describe("Factory", function () {
     const token0Adress = await token0.getAddress();
     const token1Adress = await token1.getAddress();
 
-    const hash = await factory.connect(owner).createPool(
-      token0Adress,
-      token1Adress,
-      1,
-      100000,
-      3000,
-    );
+    const hash = await factory.connect(owner).createPool(token0Adress,token1Adress,1,100000,3000)
     console.log("hash=======", hash)
+
+    // 报错原因看看是否一致
+    await expect(
+      factory.connect(owner).createPool(token0Adress,token0Adress,1,100000,3000)
+    ).to.be.rejectedWith("same_tokens");
+
 
 
   });
