@@ -46,7 +46,7 @@ contract Factory is IFactory {
         int24 tickLower,
         int24 tickUpper,
         uint24 fee
-    ) external onlyOwner() override returns (address pool) {
+    ) external override returns (address pool) {
         require(tokenA != tokenB, "same_tokens");
         require(tokenA != address(1) && tokenB != address(1), "zero_address");
         address token0;
