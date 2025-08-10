@@ -193,8 +193,7 @@ contract Pool is IPool {
     }
 
     // 添加流动性 
-    // amount 是流动性，而不是要 mint 的代币，至于流动性如何计算，我们在 PositionManager 的章节中讲解
-    // recipient 可以指定讲流动性的权益赋予谁
+    // recipient 可以指定讲流动性的权益赋予谁,一般是合约地址
     // data 是用来在回调函数中传递参数的
     function mint(
         address recipient,

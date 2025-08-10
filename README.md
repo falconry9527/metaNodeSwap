@@ -79,8 +79,6 @@ pool 相关问题
 - 当前价格: 指 token1 相对于 token0 的价格，即 1 单位 token0 = X 单位 token1
 - -  可以根据sqrtPriceX96算出: tick = TickMath.getTickAtSqrtPrice(state.sqrtPriceX96);
 
-
-
 2. tick ， tickSpacing 和 fee
 tick： 是价格的最小刻度单位，代表价格变动的最小间隔。一般是 当前价格 的万分之一，所以可以根据 sqrtPriceX96 算出来
 tickSpacing（刻度间隔）： 每次交易间隔几个 tick
@@ -92,7 +90,18 @@ fee：以 1,000,000 为基底的手续费费率，Uniswap支持四种手续费�
 
 4.Liquidity
 Position 的流动性（Liquidity） 是一个核心概念，它决定了用户在特定价格区间内提供的资金对交易的影响能力
-可以根据 当用户在价格区间 [P_a, P_b] 代币当前价格（如 Δx 和 Δy） 计算出来
+        // sqrtPriceX96 : sqrt(price) * 2^96，其中price = token1 / token0
+        // sqrtRatioAX96 : 流动性区间的下限（lower tick）对应的价格的平方根
+        // sqrtRatioBX96 : 流动性区间的上限（upper tick）对应的价格的平方根
+        // amount0Desired : 你希望提供的 token0 的最大数量
+        // amount1Desired : 你希望提供的 token1 的最大数量
+        liquidity = LiquidityAmounts.getLiquidityForAmounts(
+            sqrtPriceX96,
+            sqrtRatioAX96,
+            sqrtRatioBX96,
+            params.amount0Desired,
+            params.amount1Desired
+        );
 
 5. feeGrowthGlobal0X128 和 feeGrowthGlobal1X128
 feeGrowthGlobal0X128 : token0 全局累积手续费

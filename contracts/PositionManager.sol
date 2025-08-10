@@ -54,6 +54,8 @@ contract PositionManager is IPositionManager, ERC721 {
         _;
     }
 
+    // mint 一个 NFT 作为 position 发给 LP
+    // NFT 的 tokenId 就是 positionId
     function mint(
         MintParams calldata params
     )
@@ -68,26 +70,75 @@ contract PositionManager is IPositionManager, ERC721 {
             uint256 amount1
         )
     {
+        // 通过 MintParams 里面的 token0 和 token1 以及 index 获取对应的 Pool
+        // 调用 poolManager 的 getPool 方法获取 Pool 地址
+        address _pool = poolManager.getPool(
+            params.token0,
+            params.token1,
+            params.index
+        );
+        IPool pool = IPool(_pool);
+        // 通过获取 pool 相关信息，结合 params.amount0Desired 和 params.amount1Desired 计算这次要注入的流动性
+        uint160 sqrtPriceX96 = pool.sqrtPriceX96();
+        uint160 sqrtRatioAX96 = TickMath.getSqrtPriceAtTick(pool.tickLower());
+        uint160 sqrtRatioBX96 = TickMath.getSqrtPriceAtTick(pool.tickUpper());
+        // sqrtPriceX96 : sqrt(price) * 2^96，其中price = token1 / token0
+        // sqrtRatioAX96 : 流动性区间的下限（lower tick）对应的价格的平方根
+        // sqrtRatioBX96 : 流动性区间的上限（upper tick）对应的价格的平方根
+        // amount0Desired : 你希望提供的 token0 的最大数量
+        // amount1Desired : 你希望提供的 token1 的最大数量
+        liquidity = LiquidityAmounts.getLiquidityForAmounts(
+            sqrtPriceX96,
+            sqrtRatioAX96,
+            sqrtRatioBX96,
+            params.amount0Desired,
+            params.amount1Desired
+        );
+
+        // data 是 mint 后回调 PositionManager 会额外带的数据
+        // 需要 PoistionManger 实现回调，在回调中给 Pool 打钱
+        //哪个合约调用，就会回调给哪个合约
+        bytes memory data = abi.encode(
+            params.token0,
+            params.token1,
+            params.index,
+            msg.sender
+        );
+        (amount0, amount1) = pool.mint(address(this), liquidity, data);
 
 
     }
 
     function burn(
         uint256 positionId
-    ) external override returns (uint256 amount0, uint256 amount1) {
-
-    }
+    ) external override returns (uint256 amount0, uint256 amount1) {}
 
     function collect(
         uint256 positionId,
         address recipient
-    ) external override returns (uint256 amount0, uint256 amount1) {
-        
-    }
+    ) external override returns (uint256 amount0, uint256 amount1) {}
 
+    // 回调函数，转账给合约
     function mintCallback(
         uint256 amount0,
         uint256 amount1,
         bytes calldata data
-    ) external override {}
+    ) external override {
+        // 检查 callback 的合约地址是否是 Pool
+        (address token0, address token1, uint32 index, address payer) 
+        = abi.decode(data, (address, address, uint32, address));
+
+        // pool 回调的时候,msg.sender的地址就是 pool 了
+        address _pool = poolManager.getPool(token0, token1, index);
+        require(_pool == msg.sender, "Invalid callback caller");
+
+        // 在这里给 Pool 打钱，需要用户先 approve 足够的金额，这里才会成功
+        if (amount0 > 0) {
+            IERC20(token0).transferFrom(payer, msg.sender, amount0);
+        }
+        if (amount1 > 0) {
+            IERC20(token1).transferFrom(payer, msg.sender, amount1);
+        }
+    }
+
 }
