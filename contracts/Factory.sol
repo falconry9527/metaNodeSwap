@@ -96,7 +96,8 @@ contract Factory is IFactory {
     function sortToken(
         address tokenA,
         address tokenB
-    ) private pure returns (address, address) {
+    ) public pure returns (address, address) {
          return tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);
     }
+
 }
