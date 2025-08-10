@@ -1,7 +1,5 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
-import "@nomicfoundation/hardhat-verify";
-import "hardhat-gas-reporter"
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -13,7 +11,6 @@ const config: HardhatUserConfig = {
       },
     },
   },
-  defaultNetwork: "hardhat",
   networks: {
     hardhat: {
     },
@@ -23,17 +20,6 @@ const config: HardhatUserConfig = {
 
     },
   },
-  etherscan: {
-    apiKey: {
-      sepolia: "",
-    },
-  },
 };
 
-module.exports = {
-  default: config,
-  gasReporter: {
-    enable : true,
-    currency: '$'
-  }
-}
+export default config;
