@@ -106,17 +106,116 @@ contract PositionManager is IPositionManager, ERC721 {
         );
         (amount0, amount1) = pool.mint(address(this), liquidity, data);
 
+        // 把 NFT 给 recipient
+        _mint(params.recipient, (positionId = _nextId++));
 
+        // 获取当前合约地址的   Position ？？？ ： 当前合约的 Position 时候什么时候存入的
+        (
+            ,
+            uint256 feeGrowthInside0LastX128,
+            uint256 feeGrowthInside1LastX128,
+            ,
+        ) = pool.getPosition(address(this));
+
+        // 更新用户的 positions
+        positions[positionId] = PositionInfo({
+            id: positionId,
+            owner: params.recipient,
+            token0: params.token0,
+            token1: params.token1,
+            index: params.index,
+            fee: pool.fee(),
+            liquidity: liquidity,
+            tickLower: pool.tickLower(),
+            tickUpper: pool.tickUpper(),
+            tokensOwed0: 0,
+            tokensOwed1: 0,
+            feeGrowthInside0LastX128: feeGrowthInside0LastX128,
+            feeGrowthInside1LastX128: feeGrowthInside1LastX128
+        });
     }
 
     function burn(
         uint256 positionId
-    ) external override returns (uint256 amount0, uint256 amount1) {}
+    ) external override returns (uint256 amount0, uint256 amount1) {
+         PositionInfo storage position = positions[positionId];
+        // 通过 isAuthorizedForToken 检查 positionId 是否有权限
+        // 移除流动性，但是 token 还是保留在 pool 中，需要再调用 collect 方法才能取回 token
+        // 通过 positionId 获取对应 LP 的流动性
+        uint128 _liquidity = position.liquidity;
+        // 调用 Pool 的方法给 LP 退流动性
+        address _pool = poolManager.getPool(
+            position.token0,
+            position.token1,
+            position.index
+        );
+        IPool pool = IPool(_pool);
+        (amount0, amount1) = pool.burn(_liquidity);
+
+        // 计算这部分流动性产生的手续费
+        (
+            ,
+            uint256 feeGrowthInside0LastX128,
+            uint256 feeGrowthInside1LastX128,
+            ,
+
+        ) = pool.getPosition(address(this));
+
+        position.tokensOwed0 +=
+            uint128(amount0) +
+            uint128(
+                FullMath.mulDiv(
+                    feeGrowthInside0LastX128 -
+                        position.feeGrowthInside0LastX128,
+                    position.liquidity,
+                    FixedPoint128.Q128
+                )
+            );
+
+        position.tokensOwed1 +=
+            uint128(amount1) +
+            uint128(
+                FullMath.mulDiv(
+                    feeGrowthInside1LastX128 -
+                        position.feeGrowthInside1LastX128,
+                    position.liquidity,
+                    FixedPoint128.Q128
+                )
+            );
+
+        // 更新 position 的信息
+        position.feeGrowthInside0LastX128 = feeGrowthInside0LastX128;
+        position.feeGrowthInside1LastX128 = feeGrowthInside1LastX128;
+        position.liquidity = 0;
+    }
 
     function collect(
         uint256 positionId,
         address recipient
-    ) external override returns (uint256 amount0, uint256 amount1) {}
+    ) external override returns (uint256 amount0, uint256 amount1) {
+        // 通过 isAuthorizedForToken 检查 positionId 是否有权限
+        // 调用 Pool 的方法给 LP 退流动性
+        PositionInfo storage position = positions[positionId];
+        address _pool = poolManager.getPool(
+            position.token0,
+            position.token1,
+            position.index
+        );
+        IPool pool = IPool(_pool);
+        (amount0, amount1) = pool.collect(
+            recipient,
+            position.tokensOwed0,
+            position.tokensOwed1
+        );
+
+        // position 已经彻底没用了，销毁
+        position.tokensOwed0 = 0;
+        position.tokensOwed1 = 0;
+
+        if (position.liquidity == 0) {
+            _burn(positionId);
+        }
+    }
 
     // 回调函数，转账给合约
     function mintCallback(
