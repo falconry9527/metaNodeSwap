@@ -92,11 +92,7 @@ fee：以 1,000,000 为基底的手续费费率，Uniswap支持四种手续费�
 
 4.Liquidity
 Position 的流动性（Liquidity） 是一个核心概念，它决定了用户在特定价格区间内提供的资金对交易的影响能力
-可以根据 当用户在价格区间 [P_a, P_b] 代币当前价格（如 Δx 和 Δy） 计算出来，公式自己百度出来
-- -  可以根据 Liquidity算出 代币价格 ，如下：
-amount0 = SqrtPriceMath.getAmount0Delta(sqrtPriceX96,TickMath.getSqrtPriceAtTick(tickUpper),params.liquidityDelta);
-
-- -  可以根据Liquidity和当前交易的手续费，算出全局的手续费 :
+可以根据 当用户在价格区间 [P_a, P_b] 代币当前价格（如 Δx 和 Δy） 计算出来
 
 5. feeGrowthGlobal0X128 和 feeGrowthGlobal1X128
 feeGrowthGlobal0X128 : token0 全局累积手续费
