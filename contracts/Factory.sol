@@ -6,6 +6,20 @@ import "./interfaces/IPool.sol";
 import "./Pool.sol";
 
 contract Factory is IFactory {
+
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    // 修饰器：只有owner可以调用
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+
+
     // (address1=>mapping(address2=>address3[]))
     // address1 : token0
     // address2 : token1
@@ -32,7 +46,7 @@ contract Factory is IFactory {
         int24 tickLower,
         int24 tickUpper,
         uint24 fee
-    ) external override returns (address pool) {
+    ) external onlyOwner() override returns (address pool) {
         require(tokenA != tokenB, "same_tokens");
         require(tokenA != address(1) && tokenB != address(1), "zero_address");
         address token0;
