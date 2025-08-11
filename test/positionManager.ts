@@ -41,7 +41,7 @@ describe("deploySimpleStorageFixture", function () {
     return { poolManager,positionManager, token0, token1, owner, addr1 };
   }
 
-  it("mint function", async function () {
+  it("positionManager function", async function () {
     const {poolManager, positionManager, token0, token1, owner, addr1 } = await loadFixture(deploySimpleStorageFixture);
     // 1. 创建一个 pool
     const token0Adress = await token0.getAddress();

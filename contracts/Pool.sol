@@ -307,9 +307,12 @@ contract Pool is IPool {
         bytes calldata data
     ) external override returns (int256 amount0, int256 amount1) {
         require(amountSpecified != 0, "AS");
-
         // zeroForOne: 如果从 token0 交换 token1 则为 true，从 token1 交换 token0 则为 false
         // 判断当前价格是否满足交易的条件
+        require(zeroForOne,"AAA") ;
+        require(sqrtPriceLimitX96 < sqrtPriceX96 ,"BBB") ;
+        require(sqrtPriceLimitX96 > TickMath.MIN_SQRT_PRICE ,"CCC") ;
+
         require(
             // 存入 token0，取出token1： token0增多，token0价格下降： sqrtPriceLimitX96 < sqrtPriceX96
             // 取出 token0，存入token1： sqrtPriceLimitX96 > sqrtPriceX96

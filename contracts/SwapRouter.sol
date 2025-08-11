@@ -114,9 +114,8 @@ contract SwapRouter is ISwapRouter {
             amountIn -= uint256(zeroForOne ? amount0 : amount1);
             amountOut += uint256(zeroForOne ? -amount1 : -amount0);
 
-            // 如果 amountIn 为 0，表示交换完成，跳出循环
             if (amountIn == 0) {
-                break;
+              break ;
             }
         }
 
@@ -271,5 +270,20 @@ contract SwapRouter is ISwapRouter {
         if (amountToPay > 0) {
             IERC20(tokenIn).transferFrom(payer, _pool, amountToPay);
         }
+    }
+
+     // 只处理纯以太币转账
+    // 收到人是合约
+    event Received(address sender, uint amount);
+    receive() external payable {
+        emit Received(msg.sender, msg.value);
+    }
+
+    // fallback 函数 则更通用，可以处理任意不存在的函数调用。
+    // 如果没有 receive 函数，而合约接收以太币，它也会处理以太币的接收。
+     event FallbackCalled(address sender, uint amount);
+    // 当调用不存在的函数时触发
+    fallback() external payable {
+        emit FallbackCalled(msg.sender, msg.value);
     }
 }
