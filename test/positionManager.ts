@@ -81,18 +81,21 @@ describe("deploySimpleStorageFixture", function () {
     console.log("mint  =======" )
     console.log("token0.balanceOf(addr1)  =======",await token0.balanceOf(addr1) )
     console.log("token1.balanceOf(addr1)  =======",await token1.balanceOf(addr1) )
+    console.log("nft  =======",await positionManager.ownerOf(1n)  )
 
     // 3.  burn 
     await positionManager.connect(addr1).burn(1);
     console.log("burn  =======" )
     console.log("token0.balanceOf(addr1)  =======",await token0.balanceOf(addr1) )
     console.log("token1.balanceOf(addr1)  =======",await token1.balanceOf(addr1) )
+    console.log("nft  =======",await positionManager.ownerOf(1n)  )
 
     // 4. collect
     await positionManager.connect(addr1).collect(1n,addr1);
     console.log("collect  =======" )
     console.log("token0.balanceOf(addr1)  =======",await token0.balanceOf(addr1) )
     console.log("token1.balanceOf(addr1)  =======",await token1.balanceOf(addr1) )
+    // console.log("nft  =======",await positionManager.ownerOf(1n)  )
 
   });
 

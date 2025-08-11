@@ -104,6 +104,8 @@ contract PositionManager is IPositionManager, ERC721 {
             params.index,
             msg.sender
         );
+
+        // 给1个 NFT
         (amount0, amount1) = pool.mint(address(this), liquidity, data);
 
         // 把 NFT 给 recipient
@@ -230,6 +232,7 @@ contract PositionManager is IPositionManager, ERC721 {
         position.tokensOwed1 = 0;
 
         if (position.liquidity == 0) {
+            //  回收nft 权限 
             _burn(positionId);
         }
     }
