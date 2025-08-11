@@ -10,7 +10,7 @@ contract Token0 is ERC20, ERC20Permit, Ownable {
         _mint(msg.sender, 100000 * 10 ** 18);
     }
     function mint() external  {
-        _mint(msg.sender, 10 * 10 ** 10);
+        _mint(msg.sender, 100000 * 10 ** 18);
     }
 
 }
