@@ -28,11 +28,11 @@ describe("Factory", function () {
     const token1Adress = await token1.getAddress();
     console.log("stake token1 Adress to:", token1Adress);
 
-    return { factory, token0, token1, owner };
+    return { factory, token0, token1, owner, addr1 };
   }
 
   it("createPool", async function () {
-    const { factory, token0, token1, owner } = await loadFixture(deploySimpleStorageFixture);
+    const { factory, token0, token1, owner, addr1 } = await loadFixture(deploySimpleStorageFixture);
     const token = factory.connect(owner).sortToken(token0, token1);
     console.log("=======", token)
 
@@ -43,16 +43,15 @@ describe("Factory", function () {
     const hash = await factory.connect(owner).createPool(token0Adress,token1Adress,1,100000,3000)
     console.log("hash=======", hash)
 
-    // 创建一个 pool 相同token 的pool
+    // 报错原因看看是否一致
     await expect(
       factory.connect(owner).createPool(token0Adress,token0Adress,1,100000,3000)
     ).to.be.rejectedWith("same_tokens");
 
-    // get pool
     const pool= await factory.connect(owner).getPool(token0Adress,token1Adress,0)
-    console.log("getPool=======", hash)
+    console.log("hash=======", hash)
+
 
   });
-
 
 });
