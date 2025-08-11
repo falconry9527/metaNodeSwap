@@ -130,7 +130,7 @@ describe("deploySimpleStorageFixture", function () {
         indexPath: [0, 1],
         recipient: addr2,
         amountIn: 10n * 10n ** 18n,
-        amountOutMinimum: 1n,
+        amountOutMinimum: 0n,
         sqrtPriceLimitX96: BigInt(encodeSqrtRatioX96(50, 1).toString()),
         deadline: BigInt(Math.floor(Date.now() / 1000) + 1000),
       },

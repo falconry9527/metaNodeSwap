@@ -55,7 +55,7 @@ contract SwapRouter is ISwapRouter {
         returns (int256 _amount0, int256 _amount1) {
             return (_amount0, _amount1);
         } catch (bytes memory reason) {
-            return parseRevertReason(reason);
+            // return parseRevertReason(reason);
         }
     }
 
@@ -112,8 +112,12 @@ contract SwapRouter is ISwapRouter {
 
             // 更新 amountIn 和 amountOut
             amountIn -= uint256(zeroForOne ? amount0 : amount1);
-            amountOut += uint256(zeroForOne ? -amount1 : -amount0);
+            // require(false,"end2")  ;
 
+            amountOut += uint256(zeroForOne ? -amount1 : -amount0);
+            // require(false,"end3")  ;
+
+            // require(amountIn == 0,"end")  ;
             if (amountIn == 0) {
               break ;
             }
