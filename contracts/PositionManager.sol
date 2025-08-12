@@ -105,13 +105,13 @@ contract PositionManager is IPositionManager, ERC721 {
             msg.sender
         );
 
-        // 给1个 NFT
+        // 存入 一个 Position 到 pool.positions
         (amount0, amount1) = pool.mint(address(this), liquidity, data);
 
         // 把 NFT 给 recipient
         _mint(params.recipient, (positionId = _nextId++));
 
-        // 获取当前合约地址的   Position ？？？ ： 当前合约的 Position 时候什么时候存入的
+        // 获取当前合约地址的   Position ： 当前合约的 Position 时候什么时候存入的
         (
             ,
             uint256 feeGrowthInside0LastX128,

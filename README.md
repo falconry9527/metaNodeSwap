@@ -110,7 +110,46 @@ balance0Before.add(amount0)： 当精度丢失的时候，程序报错且停止
 ```
 
 
-PositionManager 相关问题
+流程整理
 ```
+Factory.pools :
+mapping(address => mapping(address => address[])) public pools;
+1.参数： address1 : token0 ; address2 :token1 ; address3: pool 的地址(不同的费率)
+2.存入数据: PoolManager.createAndInitializePoolIfNecessary -> Factory.createPool
+
+pool.positions ：positionManager合约地址 对应的全局 positions
+mapping(address => Position) public positions;
+
+PositionManager.positions ： PositionManager 对应的用户positions
+mapping(uint256 => PositionInfo) public positions;
+
+positionManager调用流程:
+mint （
+        address token0;
+        address token1;
+        uint32 index;
+        uint256 amount0Desired;
+        uint256 amount1Desired;
+        address recipient; // nft 授权的地址
+        uint256 deadline;
+）:
+1. 创建的时候会传入 PoolManager ，绑定 PoolManager
+2. 找到 交易对 对应的 pool: 调用的时候，传入 index（不同的费率） -> poolManager.getPool(token0,toknen1,index) -> Factory.pools 
+3. 创建并更新全局 pool.positions:   pool.mint(address(this), liquidity, data)
+4. 更新用户 PositionManager.positions: positions[positionId] = PositionInfo
+
+burn(positionId):
+1. 创建的时候会传入 PoolManager ，绑定 PoolManager
+2. 找到 positions ：PositionManager.positions[positionId]
+3. 找到 交易对 对应的 pool :  poolManager.getPool(token0,toknen1,index) -> Factory.pools 
+4. 更新全局 ： (amount0, amount1) = pool.burn(_liquidity);
+5. 更新用户 PositionManager.positions  
+
+ISwapRouter调用流程:
+1. 创建的时候会传入 PoolManager ，绑定 PoolManager
+2. 遍历 交易对 对应的 pool（根据传入的index数组） :  poolManager.getPool(token0,toknen1,index) -> Factory.pools  
+2. 调用 pool.swap 
+  a. 更新全局 pool.positions :  SwapMath.computeSwapStep
+  b. 更新个人数据
 
 ```
