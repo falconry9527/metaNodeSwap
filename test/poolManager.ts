@@ -45,7 +45,7 @@ describe("deploySimpleStorageFixture", function () {
       {
         token0: token1Adress,
         token1: token0Adress,
-        fee: 3000,
+        fee: 3000, // 分母 是 100 0000，即为 3/1000
         tickLower: TickMath.getTickAtSqrtRatio(encodeSqrtRatioX96(1, 1)),
         tickUpper: TickMath.getTickAtSqrtRatio(encodeSqrtRatioX96(10000, 1)),
         sqrtPriceX96: BigInt(encodeSqrtRatioX96(100, 1).toString()),
