@@ -119,9 +119,12 @@ mapping(address => mapping(address => address[])) public pools;
 
 pool.positions ：positionManager合约地址 对应的全局 positions
 mapping(address => Position) public positions;
+1. 存入和读取都在方法: mint -> pool._modifyPosition(写入)
 
-PositionManager.positions ： PositionManager 对应的用户positions
+PositionManager.positions ： PositionManager 对应的用户 positions
 mapping(uint256 => PositionInfo) public positions;
+1. 存入在 mint ，burn
+
 
 positionManager调用流程:
 mint （
@@ -151,5 +154,20 @@ ISwapRouter调用流程:
 2. 调用 pool.swap 
   a. 更新全局 pool.positions :  SwapMath.computeSwapStep
   b. 更新个人数据
+
+```
+
+回调
+```
+1. IMintCallback.mintCallback
+mint 的时候，回调 让用户存入 token0 和 token1
+触发方法： PositionManager.mint ->  pool.mint(address(this), liquidity, data);
+
+2.ISwapCallback.swapCallback
+swap 的时候，回调 让用户存入 token0 或 token1
+触发方法： SwapRouter.exactInput  -> this.swapInPool
+
+
+wsm 要回调用，pool 只是管理全局流动性的地方，转账功能要隔离到对应的业务逻辑
 
 ```
