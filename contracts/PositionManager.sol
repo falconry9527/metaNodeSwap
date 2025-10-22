@@ -13,7 +13,7 @@ import "./interfaces/IPositionManager.sol";
 import "./interfaces/IPool.sol";
 import "./interfaces/IPoolManager.sol";
 
-contract PositionManager is IPositionManager, ERC721 {
+contract PositionManager is IPositionManager, ERC721 ,IMintCallback{
     // 保存 PoolManager 合约地址
     IPoolManager public poolManager;
 
