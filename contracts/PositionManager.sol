@@ -85,8 +85,8 @@ contract PositionManager is IPositionManager, ERC721 {
         // sqrtPriceX96 : sqrt(price) * 2^96，其中price = token1 / token0
         // sqrtRatioAX96 : 流动性区间的下限（lower tick）对应的价格的平方根
         // sqrtRatioBX96 : 流动性区间的上限（upper tick）对应的价格的平方根
-        // amount0Desired : 你希望提供的 token0 的数量
-        // amount1Desired : 你希望提供的 token1 的数量
+        // amount0Desired : 提供的 token0 的数量
+        // amount1Desired : 提供的 token1 的数量
         liquidity = LiquidityAmounts.getLiquidityForAmounts(
             sqrtPriceX96,
             sqrtRatioAX96,

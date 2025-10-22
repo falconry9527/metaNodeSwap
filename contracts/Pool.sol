@@ -66,9 +66,7 @@ contract Pool is IPool {
         // Factory 创建 Pool 时会通 new Pool{salt: salt}() 的方式创建 Pool 合约，通过 salt 指定 Pool 的地址，这样其他地方也可以推算出 Pool 的地址
         // 参数通过读取 Factory 合约的 parameters 获取
         // 不通过构造函数传入，因为 CREATE2 会根据 initcode 计算出新地址（new_address = hash(0xFF, sender, salt, bytecode)），带上参数就不能计算出稳定的地址了
-        (factory, token0, token1, tickLower, tickUpper, fee) = IFactory(
-            msg.sender
-        ).parameters();
+        (factory, token0, token1, tickLower, tickUpper, fee) = IFactory(msg.sender).parameters();
     }
 
     function initialize(uint160 sqrtPriceX96_) external override {
