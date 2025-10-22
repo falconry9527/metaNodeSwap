@@ -134,7 +134,7 @@ mint 的时候，回调 让用户存入 token0 和 token1
 swap 的时候，回调 让用户存入 token0 或 token1
 触发方法： SwapRouter.exactInput  -> this.swapInPool
 
-
+最终的 接收和转出 资产的合约 都是 pool 合约
 wsm 要回调用，pool 只是管理全局流动性的地方，转账功能要隔离到对应的业务逻辑
 
 ```
