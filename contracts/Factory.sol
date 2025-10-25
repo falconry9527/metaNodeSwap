@@ -87,7 +87,7 @@ contract Factory is IFactory {
 
         // create pool
         // new Pool{salt: salt}(...) 是一种 确定性合约部署 的方式，它使用 CREATE2 操作码 来预先计算合约地址
-        pool = address(new Pool{salt: salt}());
+        pool = address(new Pool{salt: salt}(address(this),token0, token1, tickLower, tickUpper, fee));
 
         // save created pool
         pools[token0][token1].push(pool);
