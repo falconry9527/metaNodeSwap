@@ -1,13 +1,13 @@
 
-dex 相关问题
-```
+###  dex 相关问题
+```shell
 自动做市商（AMM）机制：x∗y=k
 流动性池是一个持有两种不同 token 的合约， x 和 y 分别代表 token0 的数目和 token1 的数目， k 是它们的乘积，当 swap 发生时，token0 和 token1 的数量都会发生变化，但二者乘积保持不变，仍然为 k 。
-```
+```shell
 
 
-PoolManager 和 Factory 相关问题
-```
+###  PoolManager 和 Factory 相关问题
+```shell
 1. calldata 起到什么作用 （IPoolManager.createAndInitializePoolIfNecessary 方法） ？
 只读且临时：calldata 是只读的，数据不会被修改，存储成本低。
 直接传递：对于外部函数（external），使用 calldata 比 memory 更省 Gas（因为不需要拷贝数据）。
@@ -26,8 +26,8 @@ CREATE2 可以预先知道要部署的合约的地址
 
 ```
 
-pool 各种方法作用
-```
+### pool 各种方法作用
+```shell
 mint(铸币) : 添加流动性
 burn（烧伤）: 燃烧流动性(换取token0 和 token1)
 collect(收集) : 取出代币 (token0 或 token1)
@@ -36,8 +36,8 @@ swap(交换) :  交换代币 （token0 换 token1 ，token1 换 token0）
 ```
 
 
-pool 相关问题
-```
+###  pool 相关问题
+```shell
 1.sqrtPriceX96 是什么 ？
 - sqrtPriceX96: 它是一个 uint160 类型的整数，存储的是 当前价格的平方根，并放大 2^96 倍（即 X96 后缀的含义）
 - 当前价格: 指 token1 相对于 token0 的价格，即 1 单位 token0 = X 单位 token1
@@ -77,8 +77,8 @@ balance0Before.add(amount0)： 当精度丢失的时候，程序报错且停止
 ```
 
 
-流程整理
-```
+###  流程整理
+```shell
 Factory.pools :
 mapping(address => mapping(address => address[])) public pools;
 1.参数： address1 : token0 ; address2 :token1 ; address3: pool 的地址(不同的费率)
@@ -124,8 +124,8 @@ ISwapRouter调用流程:
 
 ```
 
-回调
-```
+###  回调
+```shell
 1. IMintCallback.mintCallback
 mint 的时候，回调 让用户存入 token0 和 token1
 触发方法： PositionManager.mint ->  pool.mint(address(this), liquidity, data);
