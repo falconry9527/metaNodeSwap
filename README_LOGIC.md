@@ -3,8 +3,7 @@
 ```shell
 自动做市商（AMM）机制：x∗y=k
 流动性池是一个持有两种不同 token 的合约， x 和 y 分别代表 token0 的数目和 token1 的数目， k 是它们的乘积，当 swap 发生时，token0 和 token1 的数量都会发生变化，但二者乘积保持不变，仍然为 k 。
-```shell
-
+```
 
 ###  PoolManager 和 Factory 相关问题
 ```shell
